@@ -1,0 +1,12 @@
+# Google ADK — install via: pip install google-adk
+# (package name may vary; check https://google.github.io/adk-docs/)
+google-adk
+
+# Live football fixtures (unofficial FotMob client, no API key required)
+mobfot>=1.4.0
+
+# Google Maps — geocoding + Places Nearby (requires GOOGLE_MAPS_API_KEY)
+googlemaps>=4.10.0
+
+# Load .env variables into the process environment
+python-dotenv>=1.0.0
