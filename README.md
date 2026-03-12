@@ -272,6 +272,20 @@ The variable must be named **`root_agent`** — this is the name the ADK runtime
 
 ## Tools
 
+| Tool | Real API? | External service |
+|------|-----------|-----------------|
+| `get_next_match` | Yes | football-data.org v4 |
+| `get_upcoming_matches` | Yes | football-data.org v4 |
+| `identify_location` | Yes | Google Maps Geocoding API + Gemini (fallback) |
+| `find_football_bars` | Yes | Google Maps Geocoding + Places Nearby APIs |
+| `check_bar_availability` | No — simulated | — |
+| `book_table` | No — simulated | — |
+| `notify_friends` | No — simulated | — |
+| `get_travel_route` | No — simulated | — |
+| `add_to_calendar` | No — simulated | — |
+
+---
+
 ### get\_next\_match
 
 **File:** `tools/get_next_match.py`
@@ -440,6 +454,8 @@ Adds a matchday event to the user's Google Calendar.
 | `description` | `str` | `None` | Optional notes (booking ref, friends attending, etc.) |
 
 Returns an event ID, a Google Calendar deep-link that opens the pre-filled "new event" form, and a confirmation message. End time is automatically set to 3 hours after kickoff.
+
+> **Note:** Currently simulated. The tool generates a Google Calendar deep-link URL and a local event ID but does not call the Google Calendar API — no event is created automatically. In production this would use the Google Calendar API to create the event directly in the user's calendar.
 
 ---
 
