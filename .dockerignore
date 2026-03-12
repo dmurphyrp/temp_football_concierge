@@ -1,0 +1,15 @@
+.env
+.git
+.gitignore
+.adk
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+tests/
+tools/
+README.md
+requirements.txt
+secret_loader.py
+agent.py
+__init__.py
