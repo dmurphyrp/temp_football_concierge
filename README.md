@@ -56,6 +56,7 @@ repos/
     ├── tools/
     │   ├── __init__.py         # Exports all tools
     │   ├── _football_data.py   # Shared football-data.org HTTP client
+    │   ├── llm_helper_calls.py # Focused Gemini helper functions (e.g. city resolution)
     │   ├── get_next_match.py
     │   ├── get_upcoming_matches.py
     │   ├── identify_location.py
@@ -233,7 +234,7 @@ All tests use mocks exclusively — no live network calls are made to any extern
 | `test_agent.py` | Agent configuration (name, model, tools list) |
 | `test_get_next_match.py` | Fixture lookup, team aliases, home/away detection, API error handling |
 | `test_get_upcoming_matches.py` | Time-window filtering, sorting, empty results, API errors |
-| `test_identify_location.py` | Geocoding, city extraction, fallbacks, missing key, empty input |
+| `test_identify_location.py` | Geocoding, city extraction, LLM fallback via `llm_resolve_city`, missing key, empty input |
 | `test_find_football_bars.py` | Places search, rating sort, Maps links, API error states |
 | `test_check_bar_availability.py` | Capacity logic, over-capacity messaging |
 | `test_book_table.py` | Booking reference generation, capacity enforcement, empty venue |
@@ -309,17 +310,31 @@ Results are sorted by kickoff time. Useful for browsing what's on today or tonig
 
 **File:** `tools/identify_location.py`
 
-Resolves a venue name or partial address to a normalised location string that `find_football_bars` can use directly.
+Resolves a venue name, club name, or partial address to a normalised location string that `find_football_bars` can use directly.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `venue_text` | `str` | required | Venue or stadium name extracted from a fixture (e.g. `"Goodison Park"`, `"Emirates Stadium, London"`) |
+| `venue_text` | `str` | required | Venue, club, or stadium name extracted from a fixture (e.g. `"Arsenal FC"`, `"Goodison Park"`, `"Emirates Stadium, London"`) |
 
-Returns the city/locality, full formatted address, and lat/lng coordinates. Prefers the `locality` address component (city/town) so that bar searches cover the whole surrounding area rather than just the stadium itself. Falls back to `postal_town` if no locality is present.
+Attempts to geocode the venue text directly. If that returns no results (e.g. for a bare club name like `"Arsenal FC"`), it calls `llm_resolve_city` from `llm_helper_calls.py` to convert the name to a city, then geocodes that city instead. Returns the city/locality, full formatted address, and lat/lng coordinates. Prefers the `locality` address component (city/town) so that bar searches cover the whole surrounding area rather than just the stadium itself. Falls back to `postal_town` if no locality is present.
 
-**API:** [Google Maps Geocoding API](https://developers.google.com/maps/documentation/geocoding) — requires `GOOGLE_MAPS_API_KEY`.
+**APIs:** [Google Maps Geocoding API](https://developers.google.com/maps/documentation/geocoding) — requires `GOOGLE_MAPS_API_KEY`. Gemini (via `google-genai`) for LLM city resolution when direct geocoding fails.
 
 This tool is the key link in the [automatic chaining flow](#tool-chaining).
+
+---
+
+### llm\_helper\_calls
+
+**File:** `tools/llm_helper_calls.py`
+
+Internal module containing focused, single-purpose Gemini helper functions used by other tools. Not registered as an agent tool directly.
+
+| Function | Description |
+|----------|-------------|
+| `llm_resolve_city(venue_text)` | Converts a club or stadium name to its home city using Gemini (e.g. `"Arsenal FC"` → `"London"`). Returns `None` on any failure so callers degrade gracefully. |
+
+All functions in this module return `None` on failure — missing credentials, quota errors, and network problems are all handled silently so that callers can fall back to their own error handling.
 
 ---
 
