@@ -33,6 +33,14 @@ def load_secrets() -> None:
     _secrets = {
         "GOOGLE_MAPS_API_KEY": "google-maps-api-key",
         "FOOTBALL_DATA_API_KEY": "football-data-key",
+        # Twilio credentials for the phone-call booking path
+        "TWILIO_ACCOUNT_SID": "twilio-sid",
+        "TWILIO_AUTH_TOKEN": "twilio-auth",
+        "TWILIO_PHONE_NUMBER": "twilio-phone-number",
+        # Venue phone number — currently a single test number shared by all venues
+        "VENUE_PHONE_NUMBER": "phone-number",
+        # Public HTTPS URL of the deployed phone bridge Cloud Run service
+        "BRIDGE_SERVER_URL": "bridge-server-url",
     }
     for env_var, secret_id in _secrets.items():
         try:
