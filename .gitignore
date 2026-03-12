@@ -1,5 +1,8 @@
 # Environment variables — never commit real credentials
 .env
+*.json
+service-account*.json
+test_tools.py
 
 # Python
 __pycache__/
