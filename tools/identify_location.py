@@ -2,18 +2,22 @@ import os
 
 import googlemaps
 
+from .llm_helper_calls import llm_resolve_city
+
 
 def identify_location(venue_text: str) -> dict:
-    """Resolves a venue name or partial address to a usable location string.
+    """Resolves a venue or club name to a usable geographical location string.
 
-    Uses the Google Maps Geocoding API to look up stadium names, venue
-    names, or any location text extracted from a fixture response.  The
-    returned ``location`` field can be passed directly to find_football_bars.
+    Uses the Google Maps Geocoding API to look up the venue text directly.
+    When that fails (e.g. for a bare club name like 'Arsenal FC'), the
+    function asks Gemini to identify the associated city, then geocodes
+    that city instead.  The returned ``location`` field can be passed
+    directly to find_football_bars.
 
     Args:
-        venue_text: A venue name, stadium name, or partial address extracted
-                    from a fixture (e.g. 'Goodison Park', 'Emirates Stadium,
-                    London', 'Old Trafford').
+        venue_text: A venue name, club name, or partial address extracted
+                    from a fixture (e.g. 'Arsenal FC', 'Goodison Park',
+                    'Emirates Stadium, London', 'Old Trafford').
 
     Returns:
         dict: A status field, the normalised location string suitable for
@@ -39,7 +43,13 @@ def identify_location(venue_text: str) -> dict:
 
     try:
         gmaps = googlemaps.Client(key=api_key)
+
         results = gmaps.geocode(venue_text.strip())
+
+        if not results:
+            city = llm_resolve_city(venue_text)
+            if city:
+                results = gmaps.geocode(city)
 
         if not results:
             return {
