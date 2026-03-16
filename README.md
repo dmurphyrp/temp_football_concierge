@@ -120,6 +120,7 @@ The agent uses the Google Maps **Geocoding API** and **Places Nearby API** to re
 1. Open the [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project (or select an existing one)
 3. Navigate to **APIs & Services → Library** and enable:
+   - **Vertex AI API**
    - **Geocoding API**
    - **Places API**
 4. Navigate to **APIs & Services → Credentials** and click **Create credentials → API key**
