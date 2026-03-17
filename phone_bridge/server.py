@@ -64,9 +64,9 @@ def build_booking_prompt(venue_name: str, party_size: int, match_time: str) -> s
         f"LANGUAGE — Detect and match:\n"
         f"Listen carefully to the language the person answers in. "
         f"Immediately switch to that language for your entire response and "
-        f"maintain it for the rest of the call. "
-        f"If they switch language mid-call, switch with them.\n\n"
-        f"Match the intonation, dialect, and accent of the person you are speaking with.\n\n"
+        f"maintain it for the rest of the call. \n"
+        f"  - If they switch language mid-call, switch with them.\n"
+        f"  - Match the intonation, dialect, and accent of the person you are speaking with.\n\n"
 
         f"STEP 1 — Confirm you have reached the correct premises:\n"
         f"When the call is answered, confirm you are speaking with {venue_name}. "
