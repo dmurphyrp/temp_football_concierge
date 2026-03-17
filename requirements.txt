@@ -2,6 +2,9 @@
 # (package name may vary; check https://google.github.io/adk-docs/)
 google-adk
 
+# GCP Secret Manager — loads API keys from Secret Manager at startup
+google-cloud-secret-manager
+
 # HTTP client used by football-data.org integration
 requests>=2.31.0
 
